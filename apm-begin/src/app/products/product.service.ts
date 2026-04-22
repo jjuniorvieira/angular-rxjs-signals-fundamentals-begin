@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {catchError, map, Observable, of, tap, throwError} from "rxjs";
+import {catchError, map, Observable, of, switchMap, tap, throwError} from "rxjs";
 import {Product} from "./product";
 import {HttpErrorService} from "../utilities/http-error.service";
 import {ReviewService} from "../reviews/review.service";
@@ -30,7 +30,7 @@ export class ProductService {
     return this.http.get<Product>(productUrl)
       .pipe(
         tap(() => console.log(`in http.get pipeline fetching product ${id}`)),
-        map(product => this.getProductWithReviews(product)),
+        switchMap(product => this.getProductWithReviews(product)),
         catchError(err => this.handleError(err))
       );
   }
