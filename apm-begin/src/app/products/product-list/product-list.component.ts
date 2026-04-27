@@ -20,7 +20,6 @@ export class ProductListComponent {
 
   readonly products$ = this.productService.products$
     .pipe(
-      tap(products => console.log('in tap pipeline fetching products')),
       catchError(error => {
         this.errorMessage = error
         return EMPTY;
