@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {catchError, map, Observable, of, shareReplay, switchMap, tap, throwError} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, shareReplay, switchMap, tap, throwError} from "rxjs";
 import {Product} from "./product";
 import {HttpErrorService} from "../utilities/http-error.service";
 import {ReviewService} from "../reviews/review.service";
@@ -17,13 +17,16 @@ export class ProductService {
   private errorService = inject(HttpErrorService);
   private reviewService = inject(ReviewService);
 
+  private productSelectedSubject = new BehaviorSubject<number | undefined>(undefined);
+  readonly productSelected$ = this.productSelectedSubject.asObservable();
 
-    readonly products$ = this.http.get<Product[]>(this.productsUrl)
-      .pipe(
-        tap(p => console.log(JSON.stringify(p))),
-        shareReplay(1),
-        catchError(err => this.handleError(err))
-      );
+
+  readonly products$ = this.http.get<Product[]>(this.productsUrl)
+    .pipe(
+      tap(p => console.log(JSON.stringify(p))),
+      shareReplay(1),
+      catchError(err => this.handleError(err))
+    );
 
 
   getProduct(id: number): Observable<Product> {
@@ -34,6 +37,10 @@ export class ProductService {
         switchMap(product => this.getProductWithReviews(product)),
         catchError(err => this.handleError(err))
       );
+  }
+
+  productSelected(selectedProductId: number): void {
+    this.productSelectedSubject.next(selectedProductId);
   }
 
   private getProductWithReviews(product: Product): Observable<Product> {
