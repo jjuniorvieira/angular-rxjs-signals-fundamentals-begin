@@ -28,8 +28,7 @@ export class ProductListComponent {
 
   products: Product[] = [];
 
-  // Selected product id to highlight the entry
-  selectedProductId: number = 0;
+  readonly selectedProductId$ = this.productService.productSelected$;
 
   onSelected(productId: number): void {
     this.productService.productSelected(productId);
