@@ -1,6 +1,9 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {BehaviorSubject, catchError, filter, map, Observable, of, shareReplay, switchMap, tap, throwError} from "rxjs";
+import {
+  BehaviorSubject, catchError, combineLatest,
+  combineLatestAll, filter, map, Observable, of, shareReplay, switchMap, tap, throwError
+} from "rxjs";
 import {Product} from "./product";
 import {HttpErrorService} from "../utilities/http-error.service";
 import {ReviewService} from "../reviews/review.service";
@@ -28,7 +31,7 @@ export class ProductService {
       catchError(err => this.handleError(err))
     );
 
-  readonly product$ = this.productSelected$
+  readonly product1$ = this.productSelected$
     .pipe(
       filter(Boolean),
       switchMap(id => {
@@ -40,6 +43,19 @@ export class ProductService {
           );
       })
     )
+
+  //improve performance by caching the product
+  product$ = combineLatest([
+    this.productSelected$,
+    this.products$
+  ]).pipe(
+    map(([selectedProductId, products]) =>
+      products.find(p => p.id === selectedProductId)
+    ),
+    filter(Boolean),
+    switchMap(product => this.getProductWithReviews(product)),
+    catchError(err => this.handleError(err))
+  )
 
   productSelected(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId);
