@@ -49,6 +49,7 @@ export class ProductService {
     this.productSelected$,
     this.products$
   ]).pipe(
+    //destructuring concept
     map(([selectedProductId, products]) =>
       products.find(p => p.id === selectedProductId)
     ),
