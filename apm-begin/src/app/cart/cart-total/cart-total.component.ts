@@ -10,7 +10,10 @@ import {CartService} from "../cart.service";
 })
 export class CartTotalComponent {
 
-  private cartService = inject(CartService);
+  constructor(private cartService: CartService) {
+    console.log('cart', CartTotalComponent);
+  }
+
 
   cartItems = this.cartService.cartItems;
   subTotal = this.cartService.subTotals;
