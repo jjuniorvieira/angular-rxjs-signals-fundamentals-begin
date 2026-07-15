@@ -19,8 +19,6 @@ export class CartItemComponent {
 
   qtyArr = [...Array(8).keys()].map(x => x + 1);
 
-  exPrice = this.cartItem?.quantity * this.cartItem?.product.price;
-
   onQuantitySelected(quantity: number): void {
     this.cartService.updateQuantity(this.cartItem, Number(quantity));
   }
