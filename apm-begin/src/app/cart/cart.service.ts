@@ -22,7 +22,6 @@ export class CartService {
 
   totalPrice = computed<number>(() => this.subTotals() + this.deliveryFee() + this.tax());
 
-
   addToCard(product: Product) {
     this.cartItems.update(items => [...items, {product, quantity: 1}]);
   }
