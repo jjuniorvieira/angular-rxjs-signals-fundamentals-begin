@@ -18,15 +18,7 @@ export class ProductListComponent {
 
   private productService = inject(ProductService);
 
-  readonly products$ = this.productService.products$
-    .pipe(
-      catchError(error => {
-        this.errorMessage = error
-        return EMPTY;
-      })
-    );
-
-  products: Product[] = [];
+  products = this.productService.products;
 
   readonly selectedProductId$ = this.productService.productSelected$;
 
