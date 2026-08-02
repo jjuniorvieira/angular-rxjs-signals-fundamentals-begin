@@ -14,11 +14,11 @@ import {catchError, EMPTY, tap} from "rxjs";
 })
 export class ProductListComponent {
   pageTitle = 'Products';
-  errorMessage = '';
 
   private productService = inject(ProductService);
 
   products = this.productService.products;
+  errorMessage = this.productService.productsError;
 
   readonly selectedProductId$ = this.productService.productSelected$;
 

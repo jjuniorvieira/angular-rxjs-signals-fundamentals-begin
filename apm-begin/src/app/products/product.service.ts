@@ -4,7 +4,7 @@ import {
   BehaviorSubject, catchError, combineLatest,
   combineLatestAll, filter, map, Observable, of, shareReplay, switchMap, tap, throwError
 } from "rxjs";
-import {Product} from "./product";
+import {Product, Result} from "./product";
 import {HttpErrorService} from "../utilities/http-error.service";
 import {ReviewService} from "../reviews/review.service";
 import {Review} from "../reviews/review";
@@ -15,7 +15,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
 })
 export class ProductService {
 
-  private productsUrl = 'api/productsss';
+  private productsUrl = 'api/products';
 
   private http = inject(HttpClient);
   private errorService = inject(HttpErrorService);
@@ -25,22 +25,22 @@ export class ProductService {
   readonly productSelected$ = this.productSelectedSubject.asObservable();
 
 
-  private products$ = this.http.get<Product[]>(this.productsUrl)
+  private productsResult$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
+      map(p => ({data: p} as Result<Product[]>)),
       tap(p => console.log(JSON.stringify(p))),
       shareReplay(1),
-      catchError(err => this.handleError(err))
+      catchError(err => of({
+        data: [],
+        error: this.errorService.formatError(err)
+      } as Result<Product[]>))
     );
 
-  // products = toSignal(this.products$, {initialValue:[] as Product[]});
-  products = computed(() => {
-    try {
-      return toSignal(this.products$, {initialValue:[] as Product[]});
-    } catch (erro) {
-      return [] as Product[];
-    }
-  })
+  private productsResult = toSignal(this.productsResult$,
+    {initialValue:({data: []} as Result<Product[]>)});
 
+  products = computed(()=> this.productsResult().data)
+  productsError = computed(()=> this.productsResult().error)
 
   readonly product$ = this.productSelected$
     .pipe(
