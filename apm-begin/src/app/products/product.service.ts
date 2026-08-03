@@ -1,4 +1,4 @@
-import {computed, inject, Injectable} from '@angular/core';
+import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {
   BehaviorSubject, catchError, combineLatest,
@@ -23,6 +23,7 @@ export class ProductService {
 
   private productSelectedSubject = new BehaviorSubject<number | undefined>(undefined);
   readonly productSelected$ = this.productSelectedSubject.asObservable();
+  selectedProductId = signal<number | undefined>( undefined);
 
 
   private productsResult$ = this.http.get<Product[]>(this.productsUrl)
@@ -71,6 +72,7 @@ export class ProductService {
 
   productSelected(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId);
+    this.selectedProductId.set(selectedProductId);
   }
 
   private getProductWithReviews(product: Product): Observable<Product> {

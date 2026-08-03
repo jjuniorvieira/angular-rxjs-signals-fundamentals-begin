@@ -20,7 +20,7 @@ export class ProductListComponent {
   products = this.productService.products;
   errorMessage = this.productService.productsError;
 
-  readonly selectedProductId$ = this.productService.productSelected$;
+  selectedProductId = this.productService.selectedProductId;
 
   onSelected(productId: number): void {
     this.productService.productSelected(productId);
